@@ -33,7 +33,15 @@ class ModiftyTodoForm extends StatefulWidget {
 
 class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
   final _formKey = GlobalKey<FormState>();
-  TodoStatus? _status = TodoStatus.doing;
+  TodoStatus? _status;
+  String? _name;
+
+  @override
+  void initState() {
+    super.initState();
+    _name = widget.todo.name;
+    _status = widget.todo.status;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +49,11 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
 
     return Consumer<TodoModel>(
       builder: (context, todosModel, child) {
-        final todoEditingController =
-            TextEditingController(text: widget.todo.name);
-
         void _update() {
-          print('updating with ${_status?.val}');
+          print('updating with $_name');
           todosModel.update(
             id: widget.todo.id,
-            name: todoEditingController.text,
+            name: _name,
             status: _status,
           );
         }
@@ -82,7 +87,12 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
                       style: myTextTheme.headline6,
                     ),
                     TextFormField(
-                      controller: todoEditingController,
+                      initialValue: _name,
+                      onChanged: (value) {
+                        setState(() {
+                          _name = value;
+                        });
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
