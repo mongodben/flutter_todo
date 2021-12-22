@@ -7,25 +7,20 @@ class CreateTodo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TodoModel>(
-      builder: (context, todosModel, child) {
+    void handlePressed() {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return const CreateTodoForm();
+        },
+      );
+    }
 
-        void handlePressed() {
-          // TODO: make the ModalBottomSheet go up with keyboard
-          showModalBottomSheet(
-            context: context,
-            builder: (BuildContext context) {
-              return const CreateTodoForm();
-            },
-          );
-        }
-
-        return FloatingActionButton(
-          onPressed: handlePressed,
-          tooltip: 'Add',
-          child: const Icon(Icons.add),
-        );
-      },
+    return FloatingActionButton(
+      onPressed: handlePressed,
+      tooltip: 'Add',
+      child: const Icon(Icons.add),
     );
   }
 }
@@ -42,45 +37,75 @@ class _CreateTodoFormState extends State<CreateTodoForm> {
 
   @override
   Widget build(BuildContext context) {
+    TextTheme myTextTheme = Theme.of(context).textTheme;
+
     return Consumer<TodoModel>(
       builder: (context, todosModel, child) {
         final todoEditingController = TextEditingController();
         void _addTodo(String todoName) {
           todosModel.create(todoName);
         }
-        return Container(
-          height: 200,
-          color: Colors.grey.shade100,
-          child: Center(
-              child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text('Create a New Todo'),
-                TextFormField(
-                  controller: todoEditingController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
+
+        return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              color: Colors.grey.shade100,
+              height: 200,
+              padding: const EdgeInsets.only(left: 50, right: 50),
+              child: Center(
+                  child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      'Create a New Todo',
+                      style: myTextTheme.headline6,
+                    ),
+                    TextFormField(
+                      controller: todoEditingController,
+                      autofocus: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ElevatedButton(
+                                child: const Text('Cancel'),
+                                style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all(Colors.grey)),
+                                onPressed: () => Navigator.pop(context)),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ElevatedButton(
+                              child: const Text('Create'),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  _addTodo(todoEditingController.text);
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  child: const Text('Create'),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _addTodo(todoEditingController.text);
-                      Navigator.pop(context);
-                    }
-                  },
-                )
-              ],
-            ),
-          )),
-        );
+              )),
+            ));
       },
     );
   }
