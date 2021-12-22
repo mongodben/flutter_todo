@@ -33,6 +33,7 @@ class ModiftyTodoForm extends StatefulWidget {
 
 class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
   final _formKey = GlobalKey<FormState>();
+  TodoStatus? _status = TodoStatus.doing;
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +44,24 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
         final todoEditingController =
             TextEditingController(text: widget.todo.name);
 
-        TodoStatus _status = widget.todo.status;
         void _update() {
-          todosModel.update(widget.todo.id, name: todoEditingController.text);
+          print('updating with ${_status?.val}');
+          todosModel.update(
+            id: widget.todo.id,
+            name: todoEditingController.text,
+            status: _status,
+          );
         }
 
         void _deleteTodo() {
           todosModel.delete(widget.todo.id);
+        }
+
+        void handleTodoRadioChange(TodoStatus? value) {
+          print('changed value is $value');
+          setState(() {
+            _status = value;
+          });
         }
 
         return Padding(
@@ -71,7 +83,6 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
                     ),
                     TextFormField(
                       controller: todoEditingController,
-                      autofocus: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter some text';
@@ -79,35 +90,28 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
                         return null;
                       },
                     ),
-                    // Row(
-                    //   mainAxisSize: MainAxisSize.min,
-                    //   children: <Widget>[
-                    //     ListTile(
-                    //       title: Text(TodoStatus.todo.val),
-                    //       leading: Radio<TodoStatus>(
-                    //         value: TodoStatus.todo,
-                    //         groupValue: _status,
-                    //         onChanged: (TodoStatus? value) {
-                    //           setState(() {
-                    //             _status = TodoStatus.todo;
-                    //           });
-                    //         },
-                    //       ),
-                    //     ),
-                    //     ListTile(
-                    //       title: Text(TodoStatus.doing.val),
-                    //       leading: Radio<TodoStatus>(
-                    //         value: TodoStatus.doing,
-                    //         groupValue: _status,
-                    //         onChanged: (TodoStatus? value) {
-                    //           setState(() {
-                    //             _status = TodoStatus.doing;
-                    //           });
-                    //         },
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
+                    Column(
+                      children: <Widget>[
+                        RadioListTile(
+                          title: Text(TodoStatus.todo.val),
+                          value: TodoStatus.todo,
+                          onChanged: handleTodoRadioChange,
+                          groupValue: _status,
+                        ),
+                        RadioListTile(
+                          title: Text(TodoStatus.doing.val),
+                          value: TodoStatus.doing,
+                          onChanged: handleTodoRadioChange,
+                          groupValue: _status,
+                        ),
+                        RadioListTile(
+                          title: Text(TodoStatus.done.val),
+                          value: TodoStatus.done,
+                          onChanged: handleTodoRadioChange,
+                          groupValue: _status,
+                        ),
+                      ],
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 15),
                       child: Row(
