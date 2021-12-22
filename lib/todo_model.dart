@@ -27,7 +27,7 @@ class TodoModel extends ChangeNotifier {
     return todo;
   }
 
-  Todo update(String id, {String? name, TodoStatus? status}) {
+  Todo update({required String id, String? name, TodoStatus? status}) {
     if (name == null && status == null) {
       throw Exception(
           'You must include either a name, status, or both in Todo update.');
@@ -36,8 +36,8 @@ class TodoModel extends ChangeNotifier {
     if (name != null) {
       todo.name = name;
     }
-    if (name != null) {
-      todo.name = name;
+    if (status != null) {
+      todo.status = status;
     }
 
     notifyListeners();
