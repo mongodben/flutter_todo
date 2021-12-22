@@ -40,9 +40,12 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
 
     return Consumer<TodoModel>(
       builder: (context, todosModel, child) {
-        final todoEditingController = TextEditingController();
-        void _addTodo(String todoName) {
-          todosModel.create(todoName);
+        final todoEditingController =
+            TextEditingController(text: widget.todo.name);
+
+        TodoStatus _status = widget.todo.status;
+        void _update() {
+          todosModel.update(widget.todo.id, name: todoEditingController.text);
         }
 
         void _deleteTodo() {
@@ -53,7 +56,7 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
             padding: MediaQuery.of(context).viewInsets,
             child: Container(
               color: Colors.grey.shade100,
-              height: 200,
+              height: 350,
               padding: const EdgeInsets.only(left: 50, right: 50),
               child: Center(
                   child: Form(
@@ -76,6 +79,35 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
                         return null;
                       },
                     ),
+                    // Row(
+                    //   mainAxisSize: MainAxisSize.min,
+                    //   children: <Widget>[
+                    //     ListTile(
+                    //       title: Text(TodoStatus.todo.val),
+                    //       leading: Radio<TodoStatus>(
+                    //         value: TodoStatus.todo,
+                    //         groupValue: _status,
+                    //         onChanged: (TodoStatus? value) {
+                    //           setState(() {
+                    //             _status = TodoStatus.todo;
+                    //           });
+                    //         },
+                    //       ),
+                    //     ),
+                    //     ListTile(
+                    //       title: Text(TodoStatus.doing.val),
+                    //       leading: Radio<TodoStatus>(
+                    //         value: TodoStatus.doing,
+                    //         groupValue: _status,
+                    //         onChanged: (TodoStatus? value) {
+                    //           setState(() {
+                    //             _status = TodoStatus.doing;
+                    //           });
+                    //         },
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     Padding(
                       padding: const EdgeInsets.only(top: 15),
                       child: Row(
@@ -108,7 +140,7 @@ class _ModiftyTodoFormState extends State<ModiftyTodoForm> {
                               child: const Text('Update'),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  _addTodo(todoEditingController.text);
+                                  _update();
                                   Navigator.pop(context);
                                 }
                               },

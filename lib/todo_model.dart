@@ -3,11 +3,9 @@ import 'package:uuid/uuid.dart';
 import './todo.dart';
 
 class TodoModel extends ChangeNotifier {
-  /// Internal, private state of the cart.
   final List<Todo> _todos = [];
   final _uuid = const Uuid();
 
-  /// An unmodifiable view of the items in the cart.
   List<Todo> get todos => _todos;
 
   Todo create(String name) {
@@ -29,7 +27,7 @@ class TodoModel extends ChangeNotifier {
     return todo;
   }
 
-  Todo update({required String id, String? name, TodoStatus? status}) {
+  Todo update(String id, {String? name, TodoStatus? status}) {
     if (name == null && status == null) {
       throw Exception(
           'You must include either a name, status, or both in Todo update.');

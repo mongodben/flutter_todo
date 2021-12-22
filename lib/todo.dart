@@ -7,6 +7,7 @@ class Todo {
 }
 
 enum TodoStatus { todo, doing, done }
+
 extension ParseToString on TodoStatus {
   get val {
     // ignore: unnecessary_this
