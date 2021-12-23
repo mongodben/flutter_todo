@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sqflite/sqflite.dart';
 import './todo.dart';
+import './db/db.dart';
+import './db/todo.dart';
 
 class TodoModel extends ChangeNotifier {
-  final List<Todo> _todos = [];
-  final _uuid = const Uuid();
+  final TodoDb todoDb;
+  final List<Todo> todos;
 
-  List<Todo> get todos => _todos;
+  TodoModel({required this.todoDb, this.todos = const []});
+
+  final _uuid = const Uuid();
 
   Todo create(String name) {
     final id = _uuid.v4();
     final newTodo = Todo(id: id, name: name);
 
-    _todos.add(newTodo);
+    todos.add(newTodo);
+    todoDb.insert(newTodo);
 
     notifyListeners();
 
@@ -20,8 +26,8 @@ class TodoModel extends ChangeNotifier {
   }
 
   Todo read(String id) {
-    final todo = _todos.singleWhere((todo) => todo.id == id);
-
+    final todo = todos.singleWhere((todo) => todo.id == id);
+    // TODO: add DB method for this
     notifyListeners();
 
     return todo;
@@ -32,13 +38,14 @@ class TodoModel extends ChangeNotifier {
       throw Exception(
           'You must include either a name, status, or both in Todo update.');
     }
-    final todo = _todos.singleWhere((todo) => todo.id == id);
+    final todo = todos.singleWhere((todo) => todo.id == id);
     if (name != null) {
       todo.name = name;
     }
     if (status != null) {
       todo.status = status;
     }
+    todoDb.update(todo);
 
     notifyListeners();
 
@@ -46,9 +53,10 @@ class TodoModel extends ChangeNotifier {
   }
 
   bool delete(String id) {
-    final lenBefore = _todos.length;
-    _todos.removeWhere((todo) => todo.id == id);
-    final lenAfter = _todos.length;
+    final lenBefore = todos.length;
+    todos.removeWhere((todo) => todo.id == id);
+    final lenAfter = todos.length;
+    todoDb.delete(id);
 
     notifyListeners();
 
@@ -60,8 +68,8 @@ class TodoModel extends ChangeNotifier {
   }
 
   void deleteAll() {
-    _todos.clear();
-
+    todos.clear();
+    // TODO: create db method here
     notifyListeners();
   }
 }

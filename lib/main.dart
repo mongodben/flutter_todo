@@ -3,10 +3,16 @@ import 'package:provider/provider.dart';
 import 'todo_model.dart';
 import 'components/todo_list.dart';
 import 'components/create_todo.dart';
+import 'db/db.dart';
+import 'db/todo.dart';
 
-void main() {
+void main() async {
+  final db = await initializeDb();
+  final todoDb = TodoDb(db, 'todos');
+  final todos = await todoDb.getAll() ?? [];
   runApp(ChangeNotifierProvider(
-      create: (context) => TodoModel(), child: const App()));
+      create: (context) => TodoModel(todoDb: todoDb, todos: todos),
+      child: const App()));
 }
 
 class App extends StatelessWidget {
